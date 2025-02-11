@@ -96,7 +96,6 @@ The system expects CSV files with the following columns:
 
 ```
 StudentID,CGPA,Internships,Projects,Workshops/Certifications,AptitudeTestScore,SoftSkillsRating,ExtracurricularActivities,PlacementTraining,SSC_Marks,HSC_Marks
-
 ```
 
 ## 🔍 Troubleshooting
@@ -104,93 +103,103 @@ StudentID,CGPA,Internships,Projects,Workshops/Certifications,AptitudeTestScore,S
 Common issues and solutions:
 
 1. **Docker container fails to start**
-
    - Check if port 5002 is available (for web app)
    - Ensure model files are in the correct location
    - Verify Docker is running
 
 2. **Prediction errors**
-
    - Verify input data format matches requirements
    - Check if all required columns are present
    - Ensure values are within expected ranges
 
 ## 📜 Architecture Diagrams
 
-### Web Application
+### Web Application Flow
 
 ```mermaid
 graph TD
-    subgraph Client
-        A[Web Browser] -->|Upload CSV| B[Flask Web Interface]
+    subgraph User Interface
+        A[Web Browser] -->|Upload CSV| B[Flask Interface]
+        B -->|Display Results| A
     end
 
-    subgraph Flask Application
-        B -->|POST /predict_batch| C[Flask Server]
-        C -->|Save| D[Temporary Upload Directory]
-        D -->|Read| E[Data Preprocessing]
+    subgraph Server
+        B -->|POST /predict| C[Flask Backend]
+        C -->|Save File| D[Upload Directory]
+        D -->|Process| E[Data Preprocessing]
         
-        subgraph Model Pipeline
-            E -->|Normalize Data| F[Deep Learning Model]
-            F -->|Make Predictions| G[Generate Results]
+        subgraph ML Pipeline
+            E -->|Normalize| F[Feature Engineering]
+            F -->|Predict| G[Deep Learning Model]
+            G -->|Generate| H[Results Processing]
         end
         
-        G -->|Save| H[Predictions Directory]
-        G -->|JSON Response| B
+        H -->|Store| I[Predictions Directory]
+        H -->|JSON| B
     end
 
-    subgraph File System
-        I[models/best_model.h5] -->|Load at Startup| F
-        J[templates/index.html] -->|Render| B
-        K[uploads/] ---|Temporary Storage| D
-        L[predictions/*.csv] ---|Store Results| H
+    subgraph Storage
+        J[models/best_model.h5] -.->|Load| G
+        K[templates/*.html] -.->|Render| B
+        L[uploads/*] -.->|Read| D
+        M[predictions/*.csv] <-.->|Save/Load| I
     end
 
-    style Client fill:#f9f,stroke:#333,stroke-width:2px
-    style Flask Application fill:#bbf,stroke:#333,stroke-width:2px
-    style Model Pipeline fill:#bfb,stroke:#333,stroke-width:2px
-    style File System fill:#fbb,stroke:#333,stroke-width:2px
+    classDef interface fill:#ff9999,stroke:#333,stroke-width:2px
+    classDef server fill:#99ff99,stroke:#333,stroke-width:2px
+    classDef storage fill:#9999ff,stroke:#333,stroke-width:2px
+    classDef pipeline fill:#ffff99,stroke:#333,stroke-width:2px
+    
+    class A,B interface
+    class C,D,E,H server
+    class F,G pipeline
+    class J,K,L,M storage
 ```
 
-### CLI Application
+### CLI Application Flow
 
 ```mermaid
 graph TD
     subgraph CLI Interface
-        A[Start CLI] -->|Main Menu| B{User Choice}
-        B -->|Choice 1| C[Single Student Prediction]
-        B -->|Choice 2| D[Batch CSV Prediction]
-        B -->|Choice 3| E[Exit Program]
+        A[Start Program] -->|Display| B{Main Menu}
+        B -->|1| C[Single Prediction]
+        B -->|2| D[Batch Prediction]
+        B -->|3| E[Exit]
     end
 
-    subgraph Single Prediction Flow
-        C -->|Input Features| F[Get User Input]
-        F -->|Validate Input| G[Create DataFrame]
-        G -->|Preprocess| H[Normalized Data]
-        H -->|Predict| I[Deep Learning Model]
-        I -->|Display| J[Show Result]
+    subgraph Single Input Flow
+        C -->|Collect| F[User Inputs]
+        F -->|Validate| G[Input Processing]
+        G -->|Format| H[Create DataFrame]
     end
 
-    subgraph Batch Prediction Flow
-        D -->|Input CSV Path| K[Read CSV File]
-        K -->|Process Data| L[Preprocess Features]
-        L -->|Batch Predict| I
-        I -->|Save Results| M[predictions/predictions_deep_learning.csv]
+    subgraph Batch Input Flow
+        D -->|Read| I[CSV File]
+        I -->|Validate| J[Data Validation]
+        J -->|Process| K[Batch Processing]
     end
 
-    subgraph File System
-        N[models/best_model.h5] -->|Load at Startup| I
-        O[Input CSV] -->|Read| K
-        M -->|Write| P[Predictions Directory]
+    subgraph Prediction Pipeline
+        H -->|Forward| L[ML Model]
+        K -->|Forward| L
+        L -->|Generate| M[Predictions]
+        M -->|Format| N[Results]
     end
 
-    style CLI Interface fill:#f9f,stroke:#333,stroke-width:2px
-    style Single Prediction Flow fill:#bbf,stroke:#333,stroke-width:2px
-    style Batch Prediction Flow fill:#bfb,stroke:#333,stroke-width:2px
-    style File System fill:#fbb,stroke:#333,stroke-width:2px
+    N -->|Display| O[Output Results]
+    N -->|Save| P[predictions/*.csv]
+
+    classDef interface fill:#f9a,stroke:#333,stroke-width:2px
+    classDef flow fill:#aff,stroke:#333,stroke-width:2px
+    classDef pipeline fill:#ffa,stroke:#333,stroke-width:2px
+    classDef output fill:#aaf,stroke:#333,stroke-width:2px
+
+    class A,B,C,D,E interface
+    class F,G,H,I,J,K flow
+    class L,M pipeline
+    class N,O,P output
 ```
 
 ## 📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
