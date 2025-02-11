@@ -110,98 +110,42 @@ docker push yourusername/placement-prediction:latest
 
 ### CLI Application (cli.py)
 
-The CLI offers two main functionalities:
-
-1. **Single Student Prediction**
-   ```bash
-   Choose option 1 from the menu
-   
-   Required inputs:
-   - CGPA (0-10)
-   - Internships (number)
-   - Projects (number)
-   - Workshops/Certifications (number)
-   - AptitudeTestScore (0-100)
-   - SoftSkillsRating (0-10)
-   - ExtracurricularActivities (Yes/No)
-   - PlacementTraining (Yes/No)
-   - SSC_Marks (0-100)
-   - HSC_Marks (0-100)
-   ```
-
-2. **Batch Predictions from CSV**
-   ```bash
-   Choose option 2 from the menu
-   
-   Required input:
-   - Path to CSV file (must be in /app/data directory when using Docker)
-   - Model choice (logistic_regression, svc, or deep_learning)
-   
-   Output:
-   - predictions_<model_name>.csv in the data directory
-   ```
+#### CLI Workflow
+```mermaid
+graph TD;
+    A[Start CLI] --> B[Choose Option]
+    B -->|1. Single Student Prediction| C[Enter Student Data]
+    C --> D[Choose Model]
+    D --> E[Get Prediction]
+    B -->|2. Batch Prediction from CSV| F[Provide CSV File]
+    F --> G[Choose Model]
+    G --> H[Save Predictions to CSV]
+    E --> I[Display Result]
+    H --> I
+    I --> J[Exit or Restart]
+```
 
 ### Web Application (app.py)
 
-Access the web interface at `http://localhost:5002`
-
-1. **Upload Data**
-   - Select a preprocessed CSV file (X_test.csv format)
-   - Choose a model from the dropdown
-
-2. **View Results**
-   - Predictions will be saved as CSV
-   - Success/error messages displayed on the webpage
-
-## 🌿 Git Branching Strategy
-
-We follow a simplified GitFlow workflow:
-
+#### Web App Workflow
+```mermaid
+graph TD;
+    A[Open Web App] --> B[Upload CSV File]
+    B --> C[Choose Model]
+    C --> D[Submit Request]
+    D --> E[Model Predicts Outcome]
+    E --> F[Save Results as CSV]
+    F --> G[Display Results on UI]
+    G --> H[Download Prediction File]
+    H --> I[Exit or Restart]
 ```
-main
-  ↑
-develop
-  ↑
-feature/bugfix branches
-```
-
-### Branch Types
-- `main`: Production-ready code
-- `develop`: Integration branch for features
-- `feature/*`: New features
-- `bugfix/*`: Bug fixes
-- `release/*`: Release preparation
-
-### Workflow
-1. Create feature branch from develop:
-   ```bash
-   git checkout develop
-   git checkout -b feature/new-feature
-   ```
-
-2. Make changes and commit:
-   ```bash
-   git add .
-   git commit -m "feat: add new feature"
-   ```
-
-3. Push and create pull request:
-   ```bash
-   git push origin feature/new-feature
-   ```
-
-4. After review, merge to develop:
-   ```bash
-   git checkout develop
-   git merge feature/new-feature
-   ```
 
 ## 📊 Input Data Format
 
 The system expects CSV files with the following columns:
 ```
-CGPA, Internships, Projects, Workshops/Certifications, 
-AptitudeTestScore, SoftSkillsRating, ExtracurricularActivities, 
+CGPA, Internships, Projects, Workshops/Certifications,
+AptitudeTestScore, SoftSkillsRating, ExtracurricularActivities,
 PlacementTraining, SSC_Marks, HSC_Marks
 ```
 
@@ -210,7 +154,7 @@ PlacementTraining, SSC_Marks, HSC_Marks
 Common issues and solutions:
 
 1. **Docker container fails to start**
-   - Check if ports 5002 is available
+   - Check if ports 5002 are available
    - Ensure model files are in the correct location
 
 2. **Prediction errors**
@@ -221,3 +165,4 @@ Common issues and solutions:
 ## 📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
