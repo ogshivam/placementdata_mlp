@@ -38,7 +38,7 @@ A machine learning system for predicting student placements using various models
 1. Build the CLI Docker image:
 
 ```bash
-cd placement_predictor
+cd placement_predictor_cli_app
 docker build -t placement-predictor-cli .
 ```
 
