@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  cli:
+    image: ${DOCKER_USERNAME}/placement-prediction:latest
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    stdin_open: true  # Keep STDIN open for CLI interaction
+    tty: true        # Allocate a pseudo-TTY
+    command: python cli.py
+
+  web:
+    image: ${DOCKER_USERNAME}/placement-prediction:latest
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    command: python app.py
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
